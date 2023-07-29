@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,17 +7,21 @@ using UnityEngine.SceneManagement;
 
 public class LogicScript : MonoBehaviour
 {
-    public int playerScore;
+    int playerScore;
     public Text scoreText;
+
+    int highScore;
+    public Text highScoreText;
+
     public GameObject gameOverScreen;
+    public GameObject highScoreNotice;
 
     public void Start()
     {
         Application.targetFrameRate = 60;
+        setHighScore(PlayerPrefs.GetInt("HighScore"));
     }
 
-    // Add this method to the Unity property, so you can manually run it at any time
-    [ContextMenu("Increase Score")]
     public void AddScore(int scoreToAdd)
     {
         playerScore += scoreToAdd;
@@ -32,5 +37,27 @@ public class LogicScript : MonoBehaviour
     public void gameOver()
     {
         gameOverScreen.SetActive(true);
+        highScoreNotice.SetActive(false);
+
+        if (playerScore > highScore)
+        {
+            setHighScore(playerScore);
+            highScoreNotice.SetActive(true);
+        }
+    }
+
+    public void setHighScore(int newHighScore)
+    {
+        PlayerPrefs.SetInt("HighScore", newHighScore);
+        highScore = newHighScore;
+        highScoreText.text = "High Score: " + newHighScore;
+    }
+
+    [ContextMenu("Reset High Score")]
+    public void resetHighScore()
+    {
+        PlayerPrefs.SetInt("HighScore", 0);
+        highScore = 0;
+        highScoreText.text = "High Score: " + 0;
     }
 }
